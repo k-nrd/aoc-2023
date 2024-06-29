@@ -52,17 +52,18 @@ let substitute_digits str =
 let decode input =
   let step sum raw_line =
     let line = substitute_digits raw_line in
-    let value =
-      match Re.all digit_regex line with
-      | [] -> "0"
-      | x :: xs -> (
-          let first = Re.Group.get x 0 in
+    match Re.all digit_regex line with
+    | [] -> sum
+    | x :: xs -> begin
+        let first = Re.Group.get x 0 in
+        let value =
           match List.last xs with
           | Some group ->
               let last = Re.Group.get group 0 in
               String.append first last
-          | None -> String.append first first)
-    in
-    sum + Int.of_string value
+          | None -> String.append first first
+        in
+        sum + Int.of_string value
+      end
   in
   Sequence.fold ~init:0 ~f:step (seq_from_input input)
