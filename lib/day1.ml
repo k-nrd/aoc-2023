@@ -26,14 +26,15 @@ let digit_mappings =
 let digit_regex = Re.compile Re.digit
 
 let substitute_digits str =
-  let try_match s pos =
-    let m (prefix, _) = String.is_prefix (String.subo s ~pos) ~prefix in
+  let try_match substr =
+    let m (prefix, _) = String.is_prefix substr ~prefix in
     m
   in
   let rec step s pos =
     if pos >= String.length s then s
     else
-      match List.find digit_mappings ~f:(try_match s pos) with
+      let substr = String.subo s ~pos in
+      match List.find digit_mappings ~f:(try_match substr) with
       | Some (word, digit) ->
           let prefix_len = String.length word in
           step
