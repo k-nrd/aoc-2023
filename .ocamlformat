@@ -1,0 +1,5 @@
+profile = default
+exp-grouping = preserve
+break-infix = fit-or-vertical
+break-fun-decl = fit-or-vertical
+break-fun-sig = fit-or-vertical

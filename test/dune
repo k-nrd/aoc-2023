@@ -1,0 +1,4 @@
+(tests
+ (names test_day1)
+ (deps ./day1-input.txt)
+ (libraries alcotest aoc_2023))
