@@ -23,6 +23,7 @@
   ocaml
   dune
   base
+  re
   (alcotest :with-test))
  (tags
   (topics "to describe" your project)))

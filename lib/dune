@@ -1,4 +1,4 @@
 (library
  (public_name aoc_2023)
  (name aoc_2023)
- (libraries base))
+ (libraries base re))
