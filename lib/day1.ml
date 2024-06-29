@@ -1,14 +1,16 @@
 open Base
 
 let seq_from_input = function
-  | `String i -> Sequence.of_list (String.split_lines i)
-  | `In_channel i ->
-      Sequence.unfold ~init:i ~f:(fun chan ->
-          match In_channel.input_line chan with
-          | Some line -> Some (line, chan)
-          | None ->
-              In_channel.close chan;
-              None)
+  | `String s -> Sequence.of_list (String.split_lines s)
+  | `In_channel ic ->
+      let next_line () =
+        match In_channel.input_line ic with
+        | Some line -> Some (line, ())
+        | None ->
+            In_channel.close ic;
+            None
+      in
+      Sequence.unfold ~init:() ~f:next_line
 
 let digit_mappings =
   [
@@ -49,6 +51,7 @@ let substitute_digits str =
 let decode input =
   let step sum raw_line =
     let line = substitute_digits raw_line in
+    Stdlib.print_endline line;
     match Re.all digit_regex line with
     | [] -> sum
     | x :: xs -> begin
