@@ -55,9 +55,6 @@ let decode input =
     let value =
       match Re.all digit_regex line with
       | [] -> "0"
-      | x :: [] ->
-          let first = Re.Group.get x 0 in
-          String.append first first
       | x :: xs -> (
           let first = Re.Group.get x 0 in
           match List.last xs with
