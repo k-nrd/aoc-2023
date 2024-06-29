@@ -26,10 +26,7 @@ let digit_mappings =
 let digit_regex = Re.compile Re.digit
 
 let substitute_digits str =
-  let try_match substr =
-    let m (prefix, _) = String.is_prefix substr ~prefix in
-    m
-  in
+  let try_match substr (prefix, _) = String.is_prefix substr ~prefix in
   let rec step s pos =
     if pos >= String.length s then s
     else
