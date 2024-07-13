@@ -23,11 +23,6 @@ let test_decode_example_2 () =
           zoneight234\n\
           7pqrstsixteen"))
 
-let test_decode () =
-  Alcotest.(check int)
-    "correct result" 54877
-    (Day1.decode (`In_channel (In_channel.open_text "./day1-input.txt")))
-
 let test_decode_segment_1 () =
   Alcotest.(check int)
     "correct result" 842
@@ -70,6 +65,11 @@ let test_decode_segment_2 () =
           qkrsvjclp23\n\
           5fourzllbmcgkxsevengkrzkpvcmvgtxlrv6\n\
           fivetczxxvjrrqfive1sevennvj6one3\n"))
+
+let test_decode () =
+  Alcotest.(check int)
+    "correct result" 54885
+    (Day1.decode (`In_channel (In_channel.open_text "./day1-input.txt")))
 
 (* Run it *)
 let () =

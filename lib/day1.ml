@@ -1,5 +1,11 @@
 open Base
 
+let digit_strs =
+  [ "one"; "two"; "three"; "four"; "five"; "six"; "seven"; "eight"; "nine" ]
+
+let digits = [ "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9" ]
+let digit_mapping = List.zip_exn digit_strs digits
+
 let seq_from_input = function
   | `String s -> Sequence.of_list (String.split_lines s)
   | `In_channel ic ->
@@ -12,58 +18,31 @@ let seq_from_input = function
       in
       Sequence.unfold ~init:() ~f:next_line
 
-let digit_mappings =
-  [
-    ("one", "1");
-    ("two", "2");
-    ("three", "3");
-    ("four", "4");
-    ("five", "5");
-    ("six", "6");
-    ("seven", "7");
-    ("eight", "8");
-    ("nine", "9");
-  ]
-
-let digit_regex = Re.compile Re.digit
-
-let substitute_digits str =
-  let try_match substr (prefix, _) = String.is_prefix substr ~prefix in
-  let rec step s pos =
-    if pos >= String.length s then s
-    else
-      let substr = String.subo s ~pos in
-      match List.find digit_mappings ~f:(try_match substr) with
-      | Some (word, digit) ->
-          let prefix_len = String.length word in
-          step
-            (String.concat
-               [
-                 String.subo s ~len:pos;
-                 digit;
-                 String.subo s ~pos:(pos + prefix_len);
-               ])
-            (pos + 1)
-      | None -> step s (pos + 1)
+let extract_digits str =
+  let is_digit_substring whole (digit_str, _digit) =
+    String.is_prefix whole ~prefix:digit_str
   in
-  step str 0
+  let step idx acc chr =
+    let maybe_digit = String.of_char chr in
+    if List.mem digits maybe_digit ~equal:equal_string then maybe_digit :: acc
+    else
+      let remaining_str = String.subo str ~pos:idx in
+      match List.find digit_mapping ~f:(is_digit_substring remaining_str) with
+      | Some (_digit_str, digit) -> digit :: acc
+      | None -> acc
+  in
+  str |> String.foldi ~init:[] ~f:step |> List.rev
 
 let decode input =
-  let step sum raw_line =
-    let line = substitute_digits raw_line in
-    Stdlib.print_endline line;
-    match Re.all digit_regex line with
+  let step sum line =
+    match extract_digits line with
     | [] -> sum
-    | x :: xs -> begin
-        let first = Re.Group.get x 0 in
+    | first :: xs ->
         let value =
           match List.last xs with
-          | Some group ->
-              let last = Re.Group.get group 0 in
-              String.append first last
+          | Some last -> String.append first last
           | None -> String.append first first
         in
         sum + Int.of_string value
-      end
   in
   Sequence.fold ~init:0 ~f:step (seq_from_input input)
